@@ -7,28 +7,29 @@
 
 namespace uni::math::sle
 {
-  // TODO: force the matrix to be squared?
-  template<std::size_t Rows, std::size_t Cols>
-  constexpr vector<Rows> seidel(const matrix<Rows, Cols>& A, const vector<Rows>& b, double eps)
+  template<std::size_t Size>
+  constexpr vector<Size> seidel(const matrix<Size>& A,
+				const vector<Size>& b,
+				const double eps)
   {
-    auto c = matrix<Rows, Cols>::zero();
-    auto d = vector<Rows>::zero();
+    auto c = matrix<Size>::zero();
+    auto d = vector<Size>::zero();
 
-    for (std::size_t i = 0; i < Rows; ++i)
+    for (std::size_t i = 0; i < Size; ++i)
       {
 	auto dividor = A.at(i, i);
 	d.at(i) = b.at(i) / dividor;
 
-	for (std::size_t j = 0; j < Cols; ++j)
+	for (std::size_t j = 0; j < Size; ++j)
 	  {
 	    if (i == j) continue;
 	    c.at(i, j) = -A.at(i, j) / dividor;
 	  }
       }
 
-    auto prev = vector<Rows>{1};
+    auto prev = vector<Size>{1};
     auto x = d;
-    auto diff = vector<Rows>{1};
+    auto diff = vector<Size>{1};
 
     double norm = c.norm_1();
     double factor = uni::math::abs(norm / (1 - norm));
