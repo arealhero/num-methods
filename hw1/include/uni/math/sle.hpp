@@ -73,20 +73,16 @@ constexpr void gauss_down(matrix<Size>& a, vector<Size>& b)
     // 3. Normalize row
     auto divider = a.at(index, index);
     for (std::size_t col = index; col < Size; ++col)
-    {
       a.at(index, col) /= divider;
-    }
+
     b.at(index) /= divider;
 
     // 4. Subtract that row from the rows below
     for (std::size_t row = index + 1; row < Size; ++row)
     {
       auto factor = a.at(row, index);
-
       for (std::size_t col = index; col < Size; ++col)
-      {
         a.at(row, col) -= factor * a.at(index, col);
-      }
 
       b.at(row) -= factor * b.at(index);
     }
@@ -101,7 +97,6 @@ constexpr void gauss_up(matrix<Size>& a, vector<Size>& b)
     for (std::size_t row = index; row != 0; --row)
     {
       auto factor = a.at(row - 1, index);
-
       for (std::size_t col = index; col < Size; ++col)
         a.at(row - 1, col) -= factor * a.at(index, col);
 
