@@ -46,7 +46,7 @@ namespace uni::math::sle
   }
 
   template<std::size_t Size>
-  constexpr void gauss_down(matrix<Size, Size>& a, vector<Size>& b)
+  constexpr void gauss_down(matrix<Size>& a, vector<Size>& b)
   {
     for (std::size_t index = 0; index < Size; ++index)
       {
@@ -94,7 +94,7 @@ namespace uni::math::sle
   }
 
   template<std::size_t Size>
-  constexpr void gauss_up(matrix<Size, Size>& a, vector<Size>& b)
+  constexpr void gauss_up(matrix<Size>& a, vector<Size>& b)
   {
     for (std::size_t index = Size - 1; index != 0; --index)
       {
@@ -111,7 +111,7 @@ namespace uni::math::sle
   }
 
   template<std::size_t Size>
-  constexpr vector<Size> gauss(matrix<Size, Size> a, vector<Size> b)
+  constexpr vector<Size> gauss(matrix<Size> a, vector<Size> b)
   {
     gauss_down(a, b);
     gauss_up(a, b);

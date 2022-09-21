@@ -5,7 +5,7 @@
 constexpr std::size_t N = 3;
 constexpr static double eps = 1e-6;
 
-constexpr static uni::math::matrix<3, 3> A = {
+constexpr static uni::math::matrix<3> A = {
   4.,  1.,                  1.,
   1.,  2. * (3 + 0.1 * N), -1.,
   1., -1.,                  2. * (4 + 0.1 * N),

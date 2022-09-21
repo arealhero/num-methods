@@ -6,7 +6,7 @@
 namespace uni::math::optimization
 {
   template<std::size_t Size>
-  constexpr vector<Size> steepest_descent(const matrix<Size, Size>& A,
+  constexpr vector<Size> steepest_descent(const matrix<Size>& A,
 					  const vector<Size>& b,
 					  const double eps)
   {
@@ -31,7 +31,7 @@ namespace uni::math::optimization
   }
 
   template<std::size_t Size>
-  constexpr vector<Size> coordinate_descent(const matrix<Size, Size>& A,
+  constexpr vector<Size> coordinate_descent(const matrix<Size>& A,
 					    const vector<Size>& b,
 					    const double eps)
   {
