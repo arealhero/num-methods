@@ -157,6 +157,9 @@ class matrix
   {
     assert(i < Rows && j < Rows);
 
+    if (i == j)
+      return;
+
     for (std::size_t col = 0; col < Cols; ++col)
     {
       auto temp = at(i, col);
