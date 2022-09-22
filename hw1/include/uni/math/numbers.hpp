@@ -4,6 +4,8 @@
 #include <concepts>
 #include <cstdint>
 #include <limits>
+#include <stdexcept>
+#include <type_traits>
 
 namespace uni::math
 {
@@ -45,11 +47,26 @@ constexpr T power(const T base, int32_t pow)
   return result;
 }
 
-constexpr auto sqrt(std::floating_point auto x, double eps = 1e-6)
+constexpr auto exp(const std::floating_point auto x, const double eps = 1e-6)
+{
+  std::remove_cv_t<decltype(x)> prev = 1, next = 0;
+  long k = 0;
+
+  do
+  {
+    prev += next;
+    next = /* TODO */ 0;
+    throw std::runtime_error{"Not implemented yet"};
+  } while (abs(next) > eps);
+
+  return prev;
+}
+
+constexpr auto sqrt(const std::floating_point auto x, const double eps = 1e-6)
 {
   assert(x >= 0);
 
-  decltype(x) prev, next = x;
+  std::remove_cv_t<decltype(x)> prev, next = x;
 
   do
   {
