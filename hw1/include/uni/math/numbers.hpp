@@ -18,10 +18,9 @@ constexpr auto abs(decimal auto value)
   return (value > 0 ? value : -value);
 }
 
-template <typename T>
-constexpr T power(const T base, int32_t pow)
+constexpr auto power(const auto& base, int32_t pow)
 {
-  T result{1};
+  std::remove_cv_t<decltype(base)> result{1};
 
   if (pow < 0)
   {
