@@ -43,20 +43,14 @@ class matrix
     return m_data[i * Cols + j];
   }
 
-  template <std::size_t r = Rows,
-            std::size_t c = Cols,
-            typename = std::enable_if<((r == 1 && c == Cols) ||
-                                       (c == 1 && r == Rows))>::type>
   constexpr value_type& at(std::size_t index)
+    requires(Rows == 1 || Cols == 1)
   {
     assert(index < Rows * Cols);
     return m_data[index];
   }
-  template <std::size_t r = Rows,
-            std::size_t c = Cols,
-            typename = std::enable_if<((r == 1 && c == Cols) ||
-                                       (c == 1 && r == Rows))>::type>
   constexpr const value_type& at(std::size_t index) const
+    requires(Rows == 1 || Cols == 1)
   {
     assert(index < Rows * Cols);
     return m_data[index];
@@ -145,11 +139,7 @@ class matrix
     return result;
   }
 
-  template <std::size_t r = Rows,
-            std::size_t c = Cols,
-            typename = std::enable_if<(r == 1 && c == 1 && r == Rows &&
-                                       c == Cols)>::type>
-  constexpr operator value_type() const
+  constexpr operator value_type() const requires(Rows == 1 && Cols == 1)
   {
     return at(0, 0);
   }
@@ -213,11 +203,8 @@ class matrix
 
   constexpr static matrix<Rows, Cols> zero() { return matrix<Rows, Cols>{}; }
 
-  template <
-      std::size_t r = Rows,
-      std::size_t c = Cols,
-      typename = std::enable_if<(c == r && r == Rows && c == Cols)>::type>
   constexpr static matrix<Rows, Cols> identity()
+    requires(Rows == Cols)
   {
     auto result = matrix<Rows, Cols>(0);
     for (std::size_t i = 0; i < Rows; ++i)
@@ -225,11 +212,8 @@ class matrix
     return result;
   }
 
-  template <std::size_t r = Rows,
-            std::size_t c = Cols,
-            typename = std::enable_if<((r == 1 && c == Cols) ||
-                                       (c == 1 && r == Rows))>::type>
   constexpr static matrix<Rows, Cols> e(std::size_t i)
+    requires(Rows == 1 || Cols == 1)
   {
     assert(i < Rows * Cols);
     auto result = matrix<Rows, Cols>::zero();
