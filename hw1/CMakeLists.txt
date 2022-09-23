@@ -6,4 +6,9 @@ set(CMAKE_CXX_STANDARD 20)
 
 add_executable(minimize src/main.cc)
 target_include_directories(minimize PUBLIC include)
-target_compile_options(minimize PRIVATE -Wall -Wextra -Wpedantic -Werror)
+
+if(MSVC)
+	target_compile_options(minimize PRIVATE /W4 /WX)
+else()
+	target_compile_options(minimize PRIVATE -Wall -Wextra -Wpedantic -Werror)
+endif()

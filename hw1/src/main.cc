@@ -53,19 +53,19 @@ int main()
   std::cout << '\n';
 
   constexpr static auto gauss_x = uni::math::sle::gauss(A, -b);
-  std::cout << "Метод Гаусса\n\nx:\n";
+  std::cout << "Gaussn\nx:\n";
   print_matrix(gauss_x, precision);
   std::cout << "f(x) = \t\t" << f(gauss_x) << '\n';
 
   constexpr static auto steepest_x = uni::math::optimization::steepest_descent(A, b, eps);
 
-  std::cout << "\nМНГС\n\nx*:\n";
+  std::cout << "\nFastest Gradient\n\nx*:\n";
   print_matrix(steepest_x, precision);
   std::cout << "f(x*) = \t" << f(steepest_x) << '\n';
   std::cout << "||x - x*||_2: \t" << (gauss_x - steepest_x).norm_2() << "\n\n";
 
   constexpr static auto coordinate_x = uni::math::optimization::coordinate_descent(A, b, eps);
-  std::cout << "МНПС\n\nx*:\n";
+  std::cout << "Fastest Coordinate\n\nx*:\n";
   print_matrix(coordinate_x, precision);
   std::cout << "f(x*) = \t" << f(coordinate_x) << '\n';
   std::cout << "||x - x*||_2: \t" << (gauss_x - coordinate_x).norm_2() << "\n\n";
