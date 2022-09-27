@@ -1,0 +1,3 @@
+[submodule "libs/libuni"]
+	path = libs/libuni
+	url = git@github.com:arealhero/libuni.git

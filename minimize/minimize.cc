@@ -57,14 +57,14 @@ int main()
   print_matrix(gauss_x, precision);
   std::cout << "f(x) = \t\t" << f(gauss_x) << '\n';
 
-  constexpr static auto steepest_x = uni::math::optimization::steepest_descent(A, b, eps);
+  constexpr static auto steepest_x = uni::math::opt::steepest_descent(A, b, eps);
 
   std::cout << "\nFastest Gradient\n\nx*:\n";
   print_matrix(steepest_x, precision);
   std::cout << "f(x*) = \t" << f(steepest_x) << '\n';
   std::cout << "||x - x*||_2: \t" << (gauss_x - steepest_x).norm_2() << "\n\n";
 
-  constexpr static auto coordinate_x = uni::math::optimization::coordinate_descent(A, b, eps);
+  constexpr static auto coordinate_x = uni::math::opt::coordinate_descent(A, b, eps);
   std::cout << "Fastest Coordinate\n\nx*:\n";
   print_matrix(coordinate_x, precision);
   std::cout << "f(x*) = \t" << f(coordinate_x) << '\n';
