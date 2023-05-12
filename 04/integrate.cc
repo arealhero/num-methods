@@ -158,7 +158,7 @@ auto first_part() -> void
       make<Gauss>(),
   };
 
-  std::ofstream fout("values.csv");
+  std::ofstream fout("first_part.csv");
 
   fout << "N";
   for (const auto& method : methods)
@@ -190,6 +190,7 @@ auto first_part() -> void
   }
 
   fout.close();
+  std::cout << "Файл 'first_part.csv' создан.\n";
 }
 
 auto second_part() -> void
