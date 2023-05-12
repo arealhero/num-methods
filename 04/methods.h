@@ -97,7 +97,10 @@ class Simpson : public IIntegrator
 class NewtonCotes : public IIntegrator
 {
  public:
-  explicit constexpr NewtonCotes(const std::size_t n = 3) : m_n(n) {}
+  explicit constexpr NewtonCotes(const std::size_t n = 3) : m_n(n)
+  {
+    assert(m_n > 1 && "n should be greater than 1");
+  }
 
   [[nodiscard]] constexpr std::string get_name() const override
   {
