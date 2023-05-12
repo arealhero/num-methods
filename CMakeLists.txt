@@ -13,9 +13,9 @@ if (USE_CLANG_TIDY)
   set (CMAKE_CXX_CLANG_TIDY clang-tidy ;--format-style=file;--use-color)
 endif ()
 
-include_directories (include)
-
 add_subdirectory (vendors)
+
+include_directories (include)
 include_directories (SYSTEM vendors/eigen)
 
 include (compile_options)
