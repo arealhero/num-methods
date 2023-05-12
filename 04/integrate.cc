@@ -366,6 +366,7 @@ auto penalty_part_3() -> void
   }
 
   fout.close();
+  std::cout << "Файл 'penalty_3.csv' создан.\n";
 }
 
 auto penalty_part_4() -> void
