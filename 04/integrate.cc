@@ -513,7 +513,7 @@ auto run_method_with_eps(const func_t f,
       b.at(row) = runs.at(row + 1).S - runs.at(row).S;
     }
 
-    const auto C = seidel(A, b, 1e-8L);
+    const auto C = solve_sle(A, b);
 
     for (auto& run : runs)
     {

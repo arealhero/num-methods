@@ -134,13 +134,7 @@ class NewtonCotes : public IIntegrator
       }
     }
 
-    const auto coeffs = gauss(ts, mu);
-    std::cout << get_name() << ": coeffs =";
-    for (std::size_t i = 0; i < m_n; ++i)
-    {
-      std::cout << ' ' << coeffs.at(i);
-    }
-    std::cout << '\n';
+    const auto coeffs = solve_sle(ts, mu);
 
     Matrix values(m_n, 1);
     for (std::size_t i = 0; i < m_n; ++i)
@@ -183,7 +177,7 @@ class NewtonCotes : public IIntegrator
       }
     }
 
-    auto coeffs = seidel(ts, mu, 1e-8L);
+    auto coeffs = solve_sle(ts, mu);
     Matrix values(m_n, 1);
     for (std::size_t i = 0; i < m_n; ++i)
     {
@@ -234,7 +228,7 @@ class Gauss : public IIntegrator
       B.at(row) = -mu.at(n + row);
     }
 
-    const auto solution = seidel(A, B, 1e-8L);
+    const auto solution = solve_sle(A, B);
     auto polynomial_coefficients = std::array<value_t, n + 1>{1.L};
     for (std::size_t i = 0; i < n; ++i)
     {
@@ -253,7 +247,7 @@ class Gauss : public IIntegrator
       B.at(row) = mu.at(row);
     }
 
-    const auto coeffs = seidel(A, B, 1e-8L);
+    const auto coeffs = solve_sle(A, B);
     Matrix values(n, 1);
     for (std::size_t i = 0; i < n; ++i)
     {

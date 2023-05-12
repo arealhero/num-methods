@@ -3,7 +3,11 @@
 #include "types.h"
 #include "utils.h"
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wnull-dereference"
 #include <Eigen/Dense>
+#pragma GCC diagnostic pop
+
 #include <algorithm>
 #include <cassert>
 #include <cmath>
@@ -442,27 +446,39 @@ constexpr auto gauss_up(Matrix& A, Matrix& b) -> void
   }
 }
 
-/* // FIXME: remove NOLINT */
-/* // NOLINTNEXTLINE(bugprone-easily-swappable-parameters) */
-/* auto solve_sle(const Matrix& A, const Matrix& b) -> Matrix */
-/* { */
-/*   using Eigen::MatrixXd; */
-/*   using Eigen::VectorXd; */
-/*   using Eigen::Index; */
+// FIXME: remove NOLINT
+// NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
+inline auto solve_sle(const Matrix& A, const Matrix& b) -> Matrix
+{
+  using Eigen::MatrixXd;
+  using Eigen::VectorXd;
+  using Eigen::Index;
 
-/*   MatrixXd eigen_A(A.rows(), A.cols()); */
-/*   VectorXd eigen_b(b.rows()); */
+  MatrixXd eigen_A(A.rows(), A.cols());
+  VectorXd eigen_b(b.rows());
 
-/*   for (std::size_t row = 0; row < A.rows(); ++row) */
-/*   { */
-/*     for (std::size_t col = 0; col < A.cols(); ++col) */
-/*     { */
-/*       eigen_A(Index(row), Index(col)) = A.at(row, col); */
-/*     } */
+  for (std::size_t row = 0; row < A.rows(); ++row)
+  {
+    for (std::size_t col = 0; col < A.cols(); ++col)
+    {
+      eigen_A(Index(row), Index(col)) = static_cast<double>(A.at(row, col));
+    }
 
-/*     eigen_b(row) = b.at(row); */
-/*   } */
-/* } */
+    eigen_b(Index(row)) = static_cast<double>(b.at(row));
+  }
+
+  const VectorXd eigen_result = eigen_A.colPivHouseholderQr().solve(eigen_b);
+  assert (eigen_b.isApprox(eigen_A * eigen_result));
+
+  Matrix result(b.rows(), 1);
+
+  for (std::size_t row = 0; row < A.rows(); ++row)
+  {
+    result.at(row) = static_cast<value_t>(eigen_result(Index(row)));
+  }
+
+  return result;
+}
 
 // FIXME: remove NOLINT
 // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
