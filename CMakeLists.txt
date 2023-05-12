@@ -7,6 +7,7 @@ project (num-methods)
 set (CMAKE_CXX_STANDARD 20 REQUIRED)
 set (CMAKE_CXX_FLAGS_DEBUG "-g")
 set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set (CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
 
 if (USE_CLANG_TIDY)
   set (CMAKE_CXX_CLANG_TIDY clang-tidy ;--format-style=file;--use-color)
