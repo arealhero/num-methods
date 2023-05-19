@@ -14,11 +14,12 @@ if (USE_CLANG_TIDY)
 endif ()
 
 add_subdirectory (vendors)
-
-include_directories (include)
 include_directories (SYSTEM vendors/eigen)
 
 include (compile_options)
+
+include_directories (lib)
+add_subdirectory (lib)
 
 add_subdirectory (04)
 add_subdirectory (tests)

@@ -1,7 +1,8 @@
 #include "config.h"
 #include "methods.h"
+#include <core/types.h>
+#include <core/utils.h>
 #include <unistd.h>
-#include <utils.h>
 
 #include <cmath>
 #include <cstdint>
@@ -20,15 +21,15 @@ struct Run
 {
   // FIXME: remove NOLINT
   // NOLINTNEXTLINE(bugprone-easily-swappable-parameters)
-  constexpr Run(const std::size_t power_, const value_t h_, const value_t S_)
+  constexpr Run(const std::size_t power_, const double h_, const double S_)
       : power(power_), h(h_), S(S_)
   {
   }
 
   std::size_t power;
-  value_t h;
-  value_t S;
-  value_t error = 0;
+  double h;
+  double S;
+  double error = 0;
 };
 
 auto print_usage() -> void;
@@ -41,32 +42,30 @@ auto penalty_part_2() -> void;
 auto penalty_part_3() -> void;
 auto penalty_part_4() -> void;
 
-constexpr auto run_method(func_t f,
-                          const Ptr<IIntegrator>& method,
-                          std::size_t n) -> value_t;
-constexpr auto run_methods_interleaved(func_t f,
+constexpr auto run_method(FunctionType f, const Ptr<IIntegrator>& method, u32 n)
+    -> double;
+constexpr auto run_methods_interleaved(FunctionType f,
                                        const IntegratorPair& methods,
-                                       std::size_t n) -> value_t;
+                                       u32 n) -> double;
 
-auto calculate_optimum_step(func_t f,
+auto calculate_optimum_step(FunctionType f,
                             const Ptr<IIntegrator>& method,
-                            value_t eps) -> value_t;
+                            double eps) -> double;
 
-auto run_method_with_eps(func_t f,
+auto run_method_with_eps(FunctionType f,
                          const Ptr<IIntegrator>& method,
-                         value_t eps,
+                         double eps,
                          bool choose_optimum_step = false) -> Run;
 
-auto run_method_with_step(func_t f,
+auto run_method_with_step(FunctionType f,
                           const Ptr<IIntegrator>& method,
-                          value_t step) -> value_t;
-constexpr auto run_methods_with_step_interleaved(func_t f,
+                          double step) -> double;
+constexpr auto run_methods_with_step_interleaved(FunctionType f,
                                                  const IntegratorPair& methods,
-                                                 value_t step) -> value_t;
+                                                 double step) -> double;
 
-constexpr auto aitken(value_t S_1, value_t S_2, value_t S_3, value_t L)
-    -> value_t;
-constexpr auto aitken(const std::vector<Run>& runs, value_t L) -> value_t;
+constexpr auto aitken(double S_1, double S_2, double S_3, double L) -> double;
+constexpr auto aitken(const std::vector<Run>& runs, double L) -> double;
 
 auto main(int argc, char* const* argv) -> int
 {
@@ -171,7 +170,7 @@ auto first_part() -> void
   }
   fout << '\n';
 
-  for (std::size_t n = 2; n < MAX_PARTITIONS; ++n)
+  for (u32 n = 2; n < MAX_PARTITIONS; ++n)
   {
     fout << std::fixed << n << std::scientific << std::setprecision(8);
     std::cout << n << '\r' << std::flush;
@@ -195,7 +194,7 @@ auto first_part() -> void
 
 auto second_part() -> void
 {
-  constexpr value_t eps = 1e-6L;
+  constexpr double eps = 1e-6;
 
   const std::vector<Ptr<IIntegrator>> weighted_methods = {
       make<NewtonCotes>(),
@@ -261,7 +260,7 @@ auto penalty_part_2() -> void
 
   constexpr std::size_t max_partitions = 40;
   fout << "N,Составная,Малая\n";
-  for (std::size_t i = 2; i < max_partitions; ++i)
+  for (u32 i = 2; i < max_partitions; ++i)
   {
     const std::vector<Ptr<IIntegrator>> weighted_methods = {
         make<NewtonCotes>(),
@@ -299,10 +298,10 @@ auto penalty_part_3() -> void
 
   std::vector<Run> same_degree_runs;
   std::vector<Run> different_degree_runs;
-  std::vector<std::optional<value_t>> same_degree_convergence_rate;
-  std::vector<std::optional<value_t>> different_degree_convergence_rate;
+  std::vector<std::optional<double>> same_degree_convergence_rate;
+  std::vector<std::optional<double>> different_degree_convergence_rate;
 
-  constexpr value_t L = 2;
+  constexpr double L = 2;
   auto h = (ORIG_B - ORIG_A);
   for (std::size_t i = 0; i < 9; ++i)
   {
@@ -372,7 +371,7 @@ auto penalty_part_3() -> void
 auto penalty_part_4() -> void
 {
   std::cout << "--- ЧАСТЬ 4 ---\n";
-  constexpr value_t eps = 1e-4L;
+  constexpr double eps = 1e-4;
 
   const std::vector<Ptr<IIntegrator>> methods = {
       make<LeftRect>(),
@@ -397,14 +396,14 @@ auto penalty_part_4() -> void
 // |                              Implementation                              |
 // ----------------------------------------------------------------------------
 
-constexpr auto run_method(const func_t f,
+constexpr auto run_method(const FunctionType f,
                           const Ptr<IIntegrator>& method,
-                          std::size_t n) -> value_t
+                          u32 n) -> double
 {
   const auto step = (ORIG_B - ORIG_A) / n;
 
-  value_t sum = 0.L;
-  for (std::size_t i = 0; i < n; ++i)
+  double sum = 0.L;
+  for (u32 i = 0; i < n; ++i)
   {
     const auto left = ORIG_A + i * step;
     const auto right = left + step;
@@ -414,14 +413,14 @@ constexpr auto run_method(const func_t f,
   return sum;
 }
 
-constexpr auto run_methods_interleaved(const func_t f,
+constexpr auto run_methods_interleaved(const FunctionType f,
                                        const IntegratorPair& methods,
-                                       const std::size_t n) -> value_t
+                                       const u32 n) -> double
 {
   const auto step = (ORIG_B - ORIG_A) / n;
 
-  value_t sum = 0.L;
-  for (std::size_t i = 0; i < n; ++i)
+  double sum = 0.L;
+  for (u32 i = 0; i < n; ++i)
   {
     const auto left = ORIG_A + i * step;
     const auto right = left + step;
@@ -438,42 +437,42 @@ constexpr auto run_methods_interleaved(const func_t f,
   return sum;
 }
 
-auto calculate_optimum_step(func_t f,
+auto calculate_optimum_step(FunctionType f,
                             const Ptr<IIntegrator>& method,
-                            const value_t eps) -> value_t
+                            const double eps) -> double
 {
   std::cout << "Вычисление оптимального шага\n";
   std::vector<Run> runs;
 
-  constexpr value_t L = 2;
+  constexpr double L = 2;
 
-  std::size_t partitions = 1;
-  for (std::size_t i = 0; i < 3; ++i)
+  u32 partitions = 1;
+  for (u32 i = 0; i < 3; ++i)
   {
-    const value_t h = (ORIG_B - ORIG_A) / partitions;
+    const double h = (ORIG_B - ORIG_A) / partitions;
     runs.emplace_back(i + 1, h, run_method(f, method, partitions));
     partitions *= 2;
   }
 
-  const value_t m = aitken(runs, L);
+  const double m = aitken(runs, L);
   std::cout << "   m = " << m << '\n';
 
   auto& run = runs.back();
   run.error = std::abs((run.S - runs.at(1).S) / (std::pow(L, m) - 1));
 
-  return run.h * std::pow(eps / run.error, 1.L / m);
+  return run.h * std::pow(eps / run.error, 1. / m);
 }
 
-auto run_method_with_eps(const func_t f,
+auto run_method_with_eps(const FunctionType f,
                          const Ptr<IIntegrator>& method,
-                         const value_t eps,
+                         const double eps,
                          const bool choose_optimum_step) -> Run
 {
-  constexpr value_t L = 2;
+  constexpr double L = 2;
 
   std::vector<Run> runs;
 
-  value_t h = 0;
+  double h = 0;
   if (choose_optimum_step)
   {
     h = calculate_optimum_step(f, method, eps);
@@ -497,15 +496,15 @@ auto run_method_with_eps(const func_t f,
     h /= L;
 
     // Процесс Эйткена
-    const value_t m = aitken(runs, L);
+    const double m = aitken(runs, L);
     std::cout << r - 1 << ". m = " << m << '\n';
 
     // Метод Ричардсона
     Matrix A(r, r);
     Matrix b(r, 1);
-    for (std::size_t row = 0; row < r; ++row)
+    for (u32 row = 0; row < r; ++row)
     {
-      for (std::size_t col = 0; col < r; ++col)
+      for (u32 col = 0; col < r; ++col)
       {
         A.at(row, col) = std::pow(runs.at(row + 1).h, m + col) -
                          std::pow(runs.at(row).h, m + col);
@@ -520,7 +519,7 @@ auto run_method_with_eps(const func_t f,
     {
       run.error = 0;
 
-      for (std::size_t row = 0; row < C.rows(); ++row)
+      for (u32 row = 0; row < C.rows(); ++row)
       {
         run.error += C.at(row) * std::pow(run.h, m + row);
       }
@@ -535,11 +534,11 @@ auto run_method_with_eps(const func_t f,
   } while (true);
 }
 
-auto run_method_with_step(const func_t f,
+auto run_method_with_step(const FunctionType f,
                           const Ptr<IIntegrator>& method,
-                          const value_t step) -> value_t
+                          const double step) -> double
 {
-  value_t sum = 0.L;
+  double sum = 0.L;
 
   auto left = ORIG_A;
   while (left < ORIG_B)
@@ -552,11 +551,11 @@ auto run_method_with_step(const func_t f,
   return sum;
 }
 
-constexpr auto run_methods_with_step_interleaved(const func_t f,
+constexpr auto run_methods_with_step_interleaved(const FunctionType f,
                                                  const IntegratorPair& methods,
-                                                 const value_t step) -> value_t
+                                                 const double step) -> double
 {
-  value_t sum = 0.L;
+  double sum = 0.L;
 
   std::size_t i = 0;
   auto left = ORIG_A;
@@ -578,12 +577,11 @@ constexpr auto run_methods_with_step_interleaved(const func_t f,
   return sum;
 }
 
-constexpr auto aitken(value_t S_1, value_t S_2, value_t S_3, value_t L)
-    -> value_t
+constexpr auto aitken(double S_1, double S_2, double S_3, double L) -> double
 {
   return -(std::log(std::abs((S_3 - S_2) / (S_2 - S_1)))) / (std::log(L));
 }
-constexpr auto aitken(const std::vector<Run>& runs, value_t L) -> value_t
+constexpr auto aitken(const std::vector<Run>& runs, double L) -> double
 {
   const auto size = runs.size();
   assert(size >= 3);
