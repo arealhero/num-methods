@@ -12,7 +12,8 @@ template <typename Type>
 using Ptr = std::shared_ptr<Type>;
 
 template <typename Type, typename... Args>
-auto make(Args&&... args) -> Ptr<Type>
+auto make(Args&&... args)
+    -> decltype(std::make_shared<Type>(std::forward<Args>(args)...))
 {
   return std::make_shared<Type>(std::forward<Args>(args)...);
 }

@@ -1,11 +1,11 @@
 #pragma once
 
 #include "functions.h"
+#include "loggers.h"
 #include <core/utils.h>
 
 #include <cmath>
 #include <cstdint>
-#include <optional>
 
 // Вариант 9
 constexpr double xi = 1. / 11.;
@@ -36,6 +36,7 @@ struct Config
   }
 
   FunctionPtr f{};
+  LoggerPtr logger{};
 
   double x0{};
   Matrix y0 = Matrix(2, 1);
@@ -43,6 +44,4 @@ struct Config
   double xk{};
 
   double eps{};
-
-  std::optional<double> h{};
 };

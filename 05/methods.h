@@ -2,6 +2,7 @@
 
 #include "config.h"
 #include "functions.h"
+#include "loggers.h"
 #include <algebra/algebra.h>
 #include <core/types.h>
 
@@ -25,14 +26,12 @@ class IRungeKutta : public IODESolver
     AutoStep,
   };
 
-  constexpr explicit IRungeKutta(const Type type_ = Type::FixedStep)
-      : type(type_)
-  {
-  }
+  explicit IRungeKutta(const Type type_ = Type::FixedStep) : type(type_) {}
 
   [[nodiscard]] Matrix operator()(Config& config) const final
   {
     auto& f = config.f;
+    auto& logger = config.logger;
 
     auto x0 = config.x0;
     auto y0 = config.y0;
@@ -53,11 +52,6 @@ class IRungeKutta : public IODESolver
     h = (xk - x0) / n;
 
     std::cout << "h: " << h << " (approx. # of steps: " << n << ")\n";
-
-    if (type == Type::FixedStep)
-    {
-      config.h = h;
-    }
 
     while (x < xk)
     {
@@ -85,6 +79,15 @@ class IRungeKutta : public IODESolver
 
           y = next_y;
           x += h;
+
+          if (x < xk && x + h > xk)
+          {
+            std::cout << "x + h > xk, clamping h (before: " << h
+                      << ", after: " << (xk - x) << ")\n";
+            h = xk - x;
+          }
+
+          logger->insert_total_error({x, total_error});
 
           should_calculate_f = true;
         }
@@ -157,6 +160,9 @@ class IRungeKutta : public IODESolver
                       << ", after: " << (xk - x) << ")\n";
             h = xk - x;
           }
+
+          logger->insert_local_error({x, local_error});
+          logger->insert_step_value({x, h});
 
           std::cout << "number of calls: " << f->get_number_of_calls() << '\n';
           std::cout << "total number of calls: "
@@ -235,8 +241,7 @@ class IRungeKutta : public IODESolver
 class RungeKutta2 : public IRungeKutta
 {
  public:
-  constexpr explicit RungeKutta2(const double c2_,
-                                 const Type type_ = Type::FixedStep)
+  explicit RungeKutta2(const double c2_, const Type type_ = Type::FixedStep)
       : IRungeKutta(type_), c2(c2_)
   {
   }
@@ -267,6 +272,9 @@ class RungeKutta2 : public IRungeKutta
 
 class RungeKutta4 : public IRungeKutta
 {
+ public:
+  using IRungeKutta::IRungeKutta;
+
  protected:
   [[nodiscard]] auto make_step(const FunctionPtr& f,
                                const double x,
