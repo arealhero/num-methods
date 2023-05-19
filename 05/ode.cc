@@ -120,5 +120,5 @@ void third_part()
   auto config = Config{1e-5};
 
   auto runge_kutta_2_fixed = make<RungeKutta2>(xi);
-  auto runge_kutta_4_fixed = make<RungeKutta4>(xi);
+  auto runge_kutta_4_fixed = make<RungeKutta4>();
 }
