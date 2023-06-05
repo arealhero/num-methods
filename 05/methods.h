@@ -48,8 +48,8 @@ class IRungeKutta : public IODESolver
     bool should_calculate_f = false;
 
     auto h = calculate_starting_step(f_value, f, x0, y0, xk, eps);
-    auto n = std::floor((xk - x0) / h);
-    h = (xk - x0) / n;
+    auto n = std::ceil((xk - x0) / h);
+    /* h = (xk - x0) / n; */
 
     std::cout << "h: " << h << " (approx. # of steps: " << n << ")\n";
 
@@ -87,6 +87,7 @@ class IRungeKutta : public IODESolver
             h = xk - x;
           }
 
+          logger->insert_point({x, y});
           logger->insert_total_error({x, total_error});
 
           should_calculate_f = true;
@@ -132,9 +133,15 @@ class IRungeKutta : public IODESolver
             std::cout << "CASE 2: decreasing h (before: " << h
                       << ", after: " << h / 2 << ")\n";
             y = full_step_y;
+            // FIXME: пересчитать local_error для h/2
             x += h;
             h /= 2;
             should_calculate_f = true;
+            half_step_y = make_step(f, x, y, h / 2);
+            full_step_y = make_step(f, x + h / 2, half_step_y, h / 2);
+
+            local_error =
+                (full_step_y - next_y).norm2() / (1 - 1. / (1 << s()));
           }
           else if (bottom <= local_error && local_error <= middle)
           {
@@ -161,6 +168,7 @@ class IRungeKutta : public IODESolver
             h = xk - x;
           }
 
+          logger->insert_point({x, y});
           logger->insert_local_error({x, local_error});
           logger->insert_step_value({x, h});
 
